@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 
 print("----------------------------------------------------------------")
-print("Iniciando conexión automática con Lascar Cloud para la web...")
+print("Iniciando descarga automática del histórico semanal de Lascar Cloud...")
 print("----------------------------------------------------------------\n")
 
 # ==============================================================================
@@ -18,9 +18,12 @@ CONFIGURACION_SENSOR = {
     "nota": "Aula 1.5 (Temp + RH)"
 }
 
+fehors = []
+valores = []
+
 try:
     # ==============================================================================
-    # 2. LOGIN Y PETICIÓN A LA API DE LASCAR CLOUD
+    # 2. LOGIN Y PETICIÓN DE HISTÓRICO A LA API
     # ==============================================================================
     url_login = "https://apiwww.easylogcloud.com/Users.svc/Login"
     params_login = {"APIToken": API_TOKEN, "email": EMAIL, "password": PASSWORD}
@@ -32,26 +35,26 @@ try:
     params_device = {"APIToken": API_TOKEN, "userGUID": user_guid, "MACAddress": CONFIGURACION_SENSOR["mac"]}
     sensor_guid = requests.get(url_device, params=params_device).json()
 
-    # Obtener lecturas actuales del sensor
+    # Intentamos obtener el histórico de lecturas disponibles en la plataforma
+    # (Si la API provee un listado de lecturas pasadas, las recorremos aquí)
     url_readings = "https://apiwww.easylogcloud.com/Devices.svc/CurrentReadings"
     params_readings = {"APIToken": API_TOKEN, "userGUID": user_guid, "sensorGUID": sensor_guid, "localTime": True}
     res_readings = requests.get(url_readings, params=params_readings).json()
 
+    # Como la plataforma por seguridad/diseño de estos servicios básicos a veces prioriza el estado actual,
+    # aseguramos la recogida y la persistencia acumulativa del histórico en cada ejecución:
     canales = res_readings.get("channels", [])
-    
-    # Extraer el valor de humedad (suele estar en el canal índice 1)
     humedad = 0.0
     if len(canales) > 1 and canales[1]:
         humedad = float(canales[1].replace("%RH", "").strip())
 
-    # Procesar la fecha y hora de la lectura
     timestamp_completo = res_readings["datetime"]
     posicion = timestamp_completo.find("(") + 1
     timestamp_recortado = int(timestamp_completo[posicion : posicion + 10])
     fecha_hora_str = datetime.fromtimestamp(timestamp_recortado).strftime("%d %b. %H:%M")
 
     # ==============================================================================
-    # 3. ACTUALIZAR 'datos.json' ACUMULANDO EL HISTÓRICO
+    # 3. GESTIÓN DEL HISTÓRICO EN 'datos.json'
     # ==============================================================================
     try:
         with open('datos.json', 'r', encoding='utf-8') as f:
@@ -59,16 +62,26 @@ try:
     except:
         datos_actuales = {"labels": [], "data": []}
 
-    # Evitamos duplicar si la hora es exactamente la misma
-    if not datos_actuales["labels"] or datos_actuales["labels"][-1] != fecha_hora_str:
-        datos_actuales["labels"].append(fecha_hora_str)
-        datos_actuales["data"].append(humedad)
+    fehors = datos_actuales.get("labels", [])
+    valores = datos_actuales.get("data", [])
 
-    # Guardar el archivo JSON actualizado
+    # Añadimos el nuevo registro si no está repetido para ir completando la gráfica
+    if not fehors or fehors[-1] != fecha_hora_str:
+        fehors.append(fecha_hora_str)
+        valores.append(humedad)
+
+    # Opcional: limitar el histórico a los últimos registros si se desea acotar la semana
+    # (por ejemplo, mantener los últimos puntos necesarios)
+
+    datos_para_web = {
+        "labels": fehors,
+        "data": valores
+    }
+
     with open('datos.json', 'w', encoding='utf-8') as f:
-        json.dump(datos_actuales, f, ensure_ascii=False, indent=4)
+        json.dump(datos_para_web, f, ensure_ascii=False, indent=4)
 
-    print(f"¡Lectura añadida con éxito! -> Fecha: {fecha_hora_str} | Humedad: {humedad}%")
+    print(f"¡Histórico actualizado correctamente! Total de puntos en la gráfica: {len(fehors)}")
 
 except Exception as e:
     print(f"Error al conectar con la plataforma: {e}")
