@@ -1,0 +1,9 @@
+import json
+
+datos_para_web = {
+    "labels": fehors,  # Tus fechas/horas
+    "data": valores    # Tus valores numéricos de humedad
+}
+
+with open('datos.json', 'w', encoding='utf-8') as f:
+    json.dump(datos_para_web, f, ensure_ascii=False, indent=4)
