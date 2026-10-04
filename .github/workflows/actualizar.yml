@@ -5,6 +5,9 @@ on:
     - cron: '0 0 * * 1' # Cada lunes a las 00:00
   workflow_dispatch: 
 
+permissions:
+  contents: write
+
 jobs:
   run-python:
     runs-on: ubuntu-latest
@@ -22,7 +25,7 @@ jobs:
           pip install requests pandas
 
       - name: Ejecutar script de Python
-        run: python script.py # CAMBIA ESTO por el nombre exacto de tu archivo .py
+        run: python script.py
 
       - name: Guardar cambios automáticamente
         run: |
