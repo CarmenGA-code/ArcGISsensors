@@ -58,21 +58,10 @@ try:
 except Exception as e:
     print(f"Error al conectar con la plataforma: {e}")
 
-# ==============================================================================
-# 3. GUARDAR LOS DATOS RECOGIDOS EN 'datos.json'
-# ==============================================================================
-datos_para_web = {
-    "labels": fehors,  # Se rellenará automáticamente con lo que traiga la API
-    "data": valores    # Se rellenará automáticamente con lo que traiga la API
-}
-
-with open('datos.json', 'w', encoding='utf-8') as f:
-    json.dump(datos_para_web, f, ensure_ascii=False, indent=4)
-
 print("¡Proceso finalizado! El archivo datos.json se ha actualizado de forma autónoma.")
 
 # ==============================================================================
-# 4. GUARDAR LOS DATOS PARA LA PÁGINA WEB (datos.json)
+# 3. GUARDAR LOS DATOS PARA LA PÁGINA WEB (datos.json)
 # ==============================================================================
 datos_para_web = {
     "labels": fehors,  # Las fechas y horas de las mediciones
