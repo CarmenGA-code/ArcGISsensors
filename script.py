@@ -70,3 +70,16 @@ with open('datos.json', 'w', encoding='utf-8') as f:
     json.dump(datos_para_web, f, ensure_ascii=False, indent=4)
 
 print("¡Proceso finalizado! El archivo datos.json se ha actualizado de forma autónoma.")
+
+# ==============================================================================
+# 4. GUARDAR LOS DATOS PARA LA PÁGINA WEB (datos.json)
+# ==============================================================================
+datos_para_web = {
+    "labels": fehors,  # Las fechas y horas de las mediciones
+    "data": valores    # Los valores de humedad correspondientes
+}
+
+with open('datos.json', 'w', encoding='utf-8') as f:
+    json.dump(datos_para_web, f, ensure_ascii=False, indent=4)
+
+print("¡Archivo datos.json actualizado para la web de GitHub Pages!")
