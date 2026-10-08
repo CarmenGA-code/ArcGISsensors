@@ -90,8 +90,8 @@ try:
     hum_list = matriz_df["HUMEDAD"].round(2).tolist()
     co2_list = matriz_df["CO2"].round(0).tolist()
 
-    # ==============================================================================
-    # 6. GUARDAR EN 'datos.json'
+# ==============================================================================
+    # 6. GUARDAR EN LA CARPETA DEL SENSOR ('98:8B:AD:20:2E:7E/datos.json')
     # ==============================================================================
     datos_para_web = {
         "labels": fechas_list,
@@ -100,9 +100,15 @@ try:
         "co2": co2_list
     }
 
-    with open('datos.json', 'w', encoding='utf-8') as f:
+    with open('98:8B:AD:20:2E:7E/datos.json', 'w', encoding='utf-8') as f:
         json.dump(datos_para_web, f, ensure_ascii=False, indent=4)
-    print("¡Archivo datos.json actualizado con éxito!")
+    print("¡Archivo datos.json actualizado con éxito en su carpeta!")
+
+    # Y al generar los HTML, les indicamos la ruta de su carpeta:
+    generar_html("Temperatura", "ºC", "Evolución de Temperatura", temp_list, "98:8B:AD:20:2E:7E/index.html")
+    generar_html("Temperatura", "ºC", "Evolución de Temperatura", temp_list, "98:8B:AD:20:2E:7E/temperatura.html")
+    generar_html("Humedad", "%", "Evolución de Humedad", hum_list, "98:8B:AD:20:2E:7E/humedad.html")
+    generar_html("CO2", "ppm", "Evolución de CO2", co2_list, "98:8B:AD:20:2E:7E/co2.html")
 
     # ==============================================================================
     # 7. GENERACIÓN DE LOS ARCHIVOS HTML INTERACTIVOS (Sin mención a espacios)
