@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 from datetime import datetime
@@ -7,11 +8,11 @@ print("Iniciando descarga automática del histórico semanal de Lascar Cloud..."
 print("----------------------------------------------------------------\n")
 
 # ==============================================================================
-# 1. CREDENCIALES Y CONFIGURACIÓN DEL SENSOR
+# 1. CREDENCIALES SEGURAS (Leídas desde los Secrets de GitHub)
 # ==============================================================================
-API_TOKEN = "6b853ae5-6661-11f1-a86d-0aeee635d34b"
-EMAIL = "Carmen.Gomez@uclm.es"
-PASSWORD = "@Dtwin2025"
+API_TOKEN = os.getenv("API_TOKEN", "6b853ae5-6661-11f1-a86d-0aeee635d34b")
+EMAIL = os.getenv("EMAIL", "Carmen.Gomez@uclm.es")
+PASSWORD = os.getenv("PASSWORD", "@Dtwin2025")
 
 CONFIGURACION_SENSOR = {
     "mac": "00:1F:94:03:06:D0",
@@ -30,19 +31,14 @@ try:
     res_login = requests.get(url_login, params=params_login).json()
     user_guid = res_login["GUID"]
 
-    # Obtener Device GUID
     url_device = "https://apiwww.easylogcloud.com/Devices.svc/GetDeviceGUID"
     params_device = {"APIToken": API_TOKEN, "userGUID": user_guid, "MACAddress": CONFIGURACION_SENSOR["mac"]}
     sensor_guid = requests.get(url_device, params=params_device).json()
 
-    # Intentamos obtener el histórico de lecturas disponibles en la plataforma
-    # (Si la API provee un listado de lecturas pasadas, las recorremos aquí)
     url_readings = "https://apiwww.easylogcloud.com/Devices.svc/CurrentReadings"
     params_readings = {"APIToken": API_TOKEN, "userGUID": user_guid, "sensorGUID": sensor_guid, "localTime": True}
     res_readings = requests.get(url_readings, params=params_readings).json()
 
-    # Como la plataforma por seguridad/diseño de estos servicios básicos a veces prioriza el estado actual,
-    # aseguramos la recogida y la persistencia acumulativa del histórico en cada ejecución:
     canales = res_readings.get("channels", [])
     humedad = 0.0
     if len(canales) > 1 and canales[1]:
@@ -65,13 +61,9 @@ try:
     fehors = datos_actuales.get("labels", [])
     valores = datos_actuales.get("data", [])
 
-    # Añadimos el nuevo registro si no está repetido para ir completando la gráfica
     if not fehors or fehors[-1] != fecha_hora_str:
         fehors.append(fecha_hora_str)
         valores.append(humedad)
-
-    # Opcional: limitar el histórico a los últimos registros si se desea acotar la semana
-    # (por ejemplo, mantener los últimos puntos necesarios)
 
     datos_para_web = {
         "labels": fehors,
