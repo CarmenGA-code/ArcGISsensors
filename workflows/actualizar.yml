@@ -1,4 +1,4 @@
-name: Actualizar Sensor
+name: Actualizar Todos los Sensores
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  run-script:
+  run-scripts:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del repositorio
@@ -24,19 +24,45 @@ jobs:
         run: |
           pip install requests pandas
 
-      - name: Ejecutar script del sensor
+      - name: Ejecutar script del sensor 00:1F:94:03:06:CD
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
-        working-directory: . # Cambia esto por la ruta de la carpeta si el script está dentro (ej: 00-1F-94-03-06-D0)
-        run: |
-          python script.py
+        run: python "00:1F:94:03:06:CD/script.py"
+
+      - name: Ejecutar script del sensor 00:1F:94:03:06:CE
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: python "00:1F:94:03:06:CE/script.py"
+
+      - name: Ejecutar script del sensor 00:1F:94:03:06:D0
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: python "00:1F:94:03:06:D0/script.py"
+
+      - name: Ejecutar script del sensor 98:8B:AD:20:2E:72
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: python "98:8B:AD:20:2E:72/script.py"
+
+      - name: Ejecutar script del sensor 98:8B:AD:20:2E:7E
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: python "98:8B:AD:20:2E:7E/script.py"
 
       - name: Guardar cambios en el repositorio
         run: |
           git config --global user.name "bot-actualizador"
           git config --global user.email "bot@actions.github.com"
           git add .
-          git diff --staged --quiet || git commit -m "Actualización automática de datos y gráficos del sensor"
+          git diff --staged --quiet || git commit -m "Actualización automática de todos los sensores"
           git push origin main
