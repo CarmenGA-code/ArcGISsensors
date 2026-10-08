@@ -2,8 +2,11 @@ name: Actualizar Gráficos de Sensores
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Se ejecuta todos los días a las 06:00 UTC
-  workflow_dispatch:      # Permite ejecutarlo manualmente desde la pestaña "Actions" de GitHub
+    - cron: '0 6 * * *'  # Todos los días a las 06:00 UTC
+  workflow_dispatch:      # Ejecución manual
+
+permissions:
+  contents: write
 
 jobs:
   run-script:
@@ -23,6 +26,17 @@ jobs:
 
       - name: Ejecutar script de actualización
         env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python script.py
+
+      - name: Guardar cambios en el repositorio
+        run: |
+          git config --global user.name "bot-actualizador"
+          git config --global user.email "bot@actions.github.com"
+          git add datos.json
+          git diff --staged --quiet || git commit -m "Actualización automática de datos.json"
+          git push
