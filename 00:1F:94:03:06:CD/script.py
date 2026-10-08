@@ -9,7 +9,7 @@ print("Iniciando descarga y generación de gráficos de los últimos 7 días..."
 print("----------------------------------------------------------------\n")
 
 # ==============================================================================
-# 1. CREDENCIALES Y CONFIGURACIÓN (Solo modificas la MAC del sensor que quieras)
+# 1. CREDENCIALES Y CONFIGURACIÓN
 # ==============================================================================
 API_TOKEN = os.getenv("API_TOKEN")
 EMAIL = os.getenv("EMAIL")
