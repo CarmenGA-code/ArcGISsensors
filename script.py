@@ -8,11 +8,11 @@ print("Iniciando descarga automática del histórico semanal de Lascar Cloud..."
 print("----------------------------------------------------------------\n")
 
 # ==============================================================================
-# 1. CREDENCIALES SEGURAS (Leídas desde los Secrets de GitHub)
+# 1. CREDENCIALES SEGURAS (Protegidas en los Secrets de GitHub)
 # ==============================================================================
-API_TOKEN = os.getenv("API_TOKEN", "6b853ae5-6661-11f1-a86d-0aeee635d34b")
-EMAIL = os.getenv("EMAIL", "Carmen.Gomez@uclm.es")
-PASSWORD = os.getenv("PASSWORD", "@Dtwin2025")
+API_TOKEN = os.getenv("API_TOKEN")
+EMAIL = os.getenv("EMAIL")
+PASSWORD = os.getenv("PASSWORD")
 
 CONFIGURACION_SENSOR = {
     "mac": "00:1F:94:03:06:D0",
