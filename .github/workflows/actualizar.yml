@@ -1,36 +1,28 @@
-name: Actualizar Humedad Automáticamente
+name: Actualizar Gráficos de Sensores
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # Cada lunes a las 00:00
-  workflow_dispatch: 
-
-permissions:
-  contents: write
+    - cron: '0 6 * * *'  # Se ejecuta todos los días a las 06:00 UTC
+  workflow_dispatch:      # Permite ejecutarlo manualmente desde la pestaña "Actions" de GitHub
 
 jobs:
-  run-python:
+  run-script:
     runs-on: ubuntu-latest
     steps:
-      - name: Copiar repositorio
-        uses: actions/checkout@v4
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Instalar librerías
+      - name: Instalar dependencias
         run: |
           pip install requests pandas
 
-      - name: Ejecutar script de Python
-        run: python script.py
-
-      - name: Guardar cambios automáticamente
+      - name: Ejecutar script de actualización
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --global user.name "Bot Automático"
-          git config --global user.email "bot@users.noreply.github.com"
-          git add datos.json
-          git commit -m "Actualización automática de datos" || exit 0
-          git push
+          python script.py
