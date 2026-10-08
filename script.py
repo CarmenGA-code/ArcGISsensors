@@ -106,7 +106,7 @@ try:
     print("¡Archivo datos.json actualizado con éxito!")
 
     # ==============================================================================
-    # 7. GENERACIÓN DE LOS ARCHIVOS HTML INTERACTIVOS
+    # 7. GENERACIÓN DE LOS ARCHIVOS HTML INTERACTIVOS (Incluyendo index.html)
     # ==============================================================================
     
     def generar_html(nombre_variable, unidad_medida, titulo_grafico, lista_valores, nombre_archivo):
@@ -120,14 +120,23 @@ try:
     <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
     <style>
-        body {{ font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; margin: 0; padding: 30px; }}
+        body {{ font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; margin: 0; padding: 20px; }}
+        .nav {{ margin-bottom: 20px; }}
+        .nav a {{ margin: 0 10px; text-decoration: none; font-weight: bold; color: #0066cc; padding: 8px 15px; background: white; border-radius: 4px; box-shadow: 0px 2px 5px rgba(0,0,0,0.1); }}
+        .nav a.active {{ background: #0066cc; color: white; }}
         .container {{ background: white; padding: 20px; border-radius: 8px; display: inline-block; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 95%; max-width: 1200px; }}
         .instructions {{ margin-bottom: 15px; font-size: 14px; color: #555; }}
-        .chart-wrapper {{ position: relative; width: 100%; height: 550px; }}
+        .chart-wrapper {{ position: relative; width: 100%; height: 500px; }}
         canvas {{ width: 100% !important; height: 100% !important; }}
     </style>
 </head>
 <body>
+    <div class="nav">
+        <a href="index.html" class="{'active' if nombre_archivo=='index.html' else ''}">Temperatura</a>
+        <a href="humedad.html" class="{'active' if nombre_archivo=='humedad.html' else ''}">Humedad</a>
+        <a href="co2.html" class="{'active' if nombre_archivo=='co2.html' else ''}">CO2</a>
+    </div>
+
     <div class="container">
         <div class="instructions">
             💡 <b>Interactivo:</b> Pasa el cursor para ver coordenadas exactas. Usa la rueda del ratón o arrastra para hacer zoom.
@@ -177,14 +186,14 @@ try:
 """
         with open(nombre_archivo, "w", encoding="utf-8") as f:
             f.write(html_content)
-        print(f"Generado archivo gráfico: {nombre_archivo}")
+        print(f"Generado archivo: {nombre_archivo}")
 
-    # Generar los 3 archivos HTML
-    generar_html("Temperatura", "ºC", "Evolución de la Temperatura - Aula 1.5", temp_list, "temperatura.html")
+    # Generar los archivos web (index.html será el de Temperatura con un menú superior para cambiar)
+    generar_html("Temperatura", "ºC", "Evolución de la Temperatura - Aula 1.5", temp_list, "index.html")
     generar_html("Humedad", "%", "Evolución de la Humedad - Aula 1.5", hum_list, "humedad.html")
     generar_html("CO2", "ppm", "Evolución del CO2 - Aula 1.5", co2_list, "co2.html")
 
-    print("\n¡Proceso completo finalizado con éxito!")
+    print("\n¡Proceso completo y generación de web finalizada con éxito!")
 
 except Exception as e:
     print(f"Error durante la ejecución del script: {e}")
